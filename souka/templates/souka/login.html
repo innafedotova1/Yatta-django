@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link type="text/css" href="{% static 'souka/src/css/style.css' %}" rel="stylesheet" />
+  <title>Вход</title>
+  <meta name="description" content="Изучение японского языка">
+  {% include 'souka/favicons.html' %}
+</head>
+<body class="login">
+
+  <section class="main-section login">
+    <h1 class="login__title">Yatta!</h1>
+    <form method="POST" action="{% url 'login' %}" class="login__container">
+      {% csrf_token %}
+    
+      <h2 class="login__text">Введите свой email</h2>
+      <input type="email" name="email" class="login__input" required>
+    
+      <h2 class="login__text">Введите пароль</h2>
+      <input type="password" name="password" class="login__input" required>
+    
+      <!-- Сообщения об ошибке -->
+      <div class="messages" id="message-box">
+        {% if messages %}
+          {% for message in messages %}
+            <p class="error-text">{{ message }}</p>
+          {% endfor %}
+        {% endif %}
+      </div>
+
+    
+      <button type="submit" class="button_big_yellow">Войти</button>
+    </form>
+
+    <a class="login__link" href="{% url 'registration' %}">Еще нет аккаунта? Регистрация!</a>
+  </section>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const messageBox = document.getElementById('message-box');
+    if (messageBox && messageBox.innerText.trim() !== "") {
+      setTimeout(() => {
+        messageBox.classList.add('hidden');
+        // также очищаем текст
+        setTimeout(() => {
+          messageBox.innerHTML = '';
+        }, 500); // после анимации
+      }, 3000);
+    }
+  });
+</script>
+</body>
+</html>

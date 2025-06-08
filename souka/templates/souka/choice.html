@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ choice.title }}</title>
+  <link rel="stylesheet" href="{% static 'souka/src/css/style.css' %}">
+  {% include 'souka/favicons.html' %}
+</head>
+<body class="lesson-page">
+
+  <header class="lesson-page__header">
+    <a class="choice-page__cross" href="{% url 'home' %}" title="Вернуться">
+      <img src="{% static 'souka/src/icons/cross.svg' %}" alt="Назад" width="32" height="32">
+    </a>
+    <h1 class="lesson-page__title">{{ choice.chapter.title }}</h1>
+  </header>
+
+  <div class="choice-wrapper">
+    <div class="lesson-title">{{ choice.title }}</div>
+
+    <div class="card-options">
+      {% for image in choice.images.all %}
+        <div class="card-option" data-correct="{{ image.is_correct|yesno:'true,false' }}" onclick="selectCard(this)">
+          <img src="{{ image.image.url }}" alt="Вариант {{ forloop.counter }}">
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="button-group">
+    <button id="retry-btn" class="button_small_gray" onclick="retry()" style="display: none;">Ещё раз</button>
+    <button id="check-btn" class="button_small_green">Проверить!</button>
+  </div>
+
+  <form id="mark-done-form" method="post" action="{% url 'mark_choice_done' choice.id %}" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="perfect" id="perfect-input" value="true">
+  </form>
+
+  <script>
+    let selectedCard = null;
+    let canSelect = true;  // ← новая переменная
+
+    function selectCard(card) {
+      if (!canSelect) return; // запрет выбора, если заблокировано
+
+      document.querySelectorAll('.card-option').forEach(c => {
+        c.classList.remove('selected', 'correct', 'wrong');
+      });
+
+      card.classList.add('selected');
+      selectedCard = card;
+    }
+
+    function checkAnswer() {
+      if (!selectedCard) return;
+
+      const isCorrect = selectedCard.dataset.correct === 'true';
+      const checkBtn = document.getElementById('check-btn');
+      const retryBtn = document.getElementById('retry-btn');
+
+      if (isCorrect) {
+        selectedCard.classList.add('correct');
+        checkBtn.textContent = 'Дальше!';
+        canSelect = false; // ← блокировка выбора
+        checkBtn.onclick = () => {
+          document.getElementById('mark-done-form').submit();
+        };
+      } else {
+        selectedCard.classList.add('wrong');
+        checkBtn.style.display = 'none';
+        retryBtn.style.display = 'inline-block';
+        canSelect = false; // ← блокировка выбора
+      }
+    }
+
+    function retry() {
+      document.querySelectorAll('.card-option').forEach(card => {
+        card.classList.remove('selected', 'correct', 'wrong');
+      });
+
+      selectedCard = null;
+      canSelect = true;
+
+      const checkBtn = document.getElementById('check-btn');
+      const retryBtn = document.getElementById('retry-btn');
+
+      retryBtn.style.display = 'none';
+      checkBtn.textContent = 'Проверить!';
+      checkBtn.style.display = 'inline-block';
+
+      document.getElementById('perfect-input').value = "false";
+    }
+    document.getElementById('check-btn').addEventListener('click', checkAnswer);
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+
+        const checkBtn = document.getElementById('check-btn');
+        const retryBtn = document.getElementById('retry-btn');
+        const form = document.getElementById('mark-done-form');
+
+        if (checkBtn.style.display !== 'none' && checkBtn.textContent === 'Проверить!') {
+          checkAnswer();
+        } else if (checkBtn.style.display !== 'none' && checkBtn.textContent === 'Дальше!') {
+          form.submit();
+        } else if (retryBtn.style.display !== 'none') {
+          retry();
+        }
+      }
+    });
+  </script>
+</body>
+</html>

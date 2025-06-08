@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Souka{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'souka/src/css/style.css' %}" />
+  {% include 'souka/favicons.html' %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+
+  {% block header %}
+
+  {% endblock %}
+
+
+  {% block content %}
+  <!-- Контент страницы -->
+  {% endblock %}
+
+  {% block footer %}
+  <footer class="main-page__footer">
+    <nav class="footer-nav">
+      <a href="{% url 'progress' %}" class="footer-link">
+        <img src="{% static 'souka/src/icons/progress-icon.svg' %}" alt="Успеваемость" />
+        <span>Успеваемость</span>
+      </a>
+      <a href="{% url 'home' %}" class="footer-link">
+        <img src="{% static 'souka/src/icons/lesson-icon.svg' %}" alt="Карточки" />
+        <span>Уроки</span>
+      </a>
+      <a href="{% url 'achievements' %}" class="footer-link">
+        <img src="{% static 'souka/src/icons/achievements-icon.svg' %}" alt="Достижения" />
+        <span>Достижения</span>
+      </a>
+      <a href="{% url 'profile' %}" class="footer-link">
+        <img src="{% static 'souka/src/icons/profile-icon.svg' %}" alt="Профиль" />
+        <span>Профиль</span>
+      </a>
+    </nav>
+  </footer>
+  {% endblock %}
+
+</body>
+</html>

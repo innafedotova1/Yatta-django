@@ -1,0 +1,39 @@
+{% extends 'souka/base.html' %}
+{% load static %}
+
+{% block title %}Достижения{% endblock %}
+{% block body_class %}profile-page{% endblock %}
+
+  {% block header %}
+    <header class="achievements-header">
+      <h1 class="achievements-logo">Yatta!</h1>
+    </header>
+  {% endblock %}
+
+
+{% block content %}
+  <section class="achievements-info">
+    <h2 class="achievements-title">Достижения</h2>
+    <p class="achievements-count">Всего достижений: {{ completed_count }}</p>
+    <p class="achievements-subtext">Так держать!</p>
+  </section>
+
+  <section class="profile-achievements">
+    {% for achievement in achievements %}
+      <div class="achievement-path {% if achievement.completed %}success{% else %}inactive{% endif %}">
+        <h3 class="achievement-path__title {% if achievement.completed %}green{% endif %}">
+          {{ achievement.title }}
+        </h3>
+        <div class="achievement-card">
+          <img src="{% static 'souka/src/img/' %}{% if achievement.completed %}{{ achievement.image_true }}{% else %}{{ achievement.image_false }}{% endif %}" alt="{{ achievement.title }}" />
+          <div class="achievement-card__text">
+            <p class="achievement-card__task">{{ achievement.description }}</p>
+            {% if achievement.completed %}
+              <p class="achievement-card__status">Выполнено!</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </section>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends 'souka/base.html' %}
+{% load static %}
+
+{% block title %}Профиль{% endblock %}
+{% block body_class %}profile-page{% endblock %}
+
+{% block header %}
+  <header class="profile-header">
+    <h1 class="profile-header__logo">Yatta!</h1>
+    <a href="{% url 'settings' %}" class="profile-header__settings">
+      <img src="{% static 'souka/src/icons/settings-icon.svg' %}" alt="Настройки" />
+    </a>
+  </header>
+{% endblock %}
+
+{% block content %}
+  <section class="profile-user">
+    <div class="profile-user__avatar">
+      {% if user.profile.avatar %}
+        <img src="{% static 'souka/src/img/' %}{{ user.profile.avatar }}" alt="Аватар">
+      {% else %}
+      {% endif %}
+    </div>
+    <div class="profile-user__info">
+      <p class="profile-user__name">{{ user.username }}</p>
+      <p class="profile-user__email">{{ user.email }}</p>
+      <p class="profile-user__since">Вместе с {{ user.date_joined|date:"E Y" }}</p>
+    </div>
+  </section>
+
+  <section class="profile-stats">
+    <h2 class="profile-section__title">Статистика</h2>
+    <div class="profile-stats__cards">
+      <div class="stat-card">
+        <img src="{% static 'souka/src/img/st_words.png' %}" alt="Слов изучено" />
+        <p class="stat-card__value">{{ words_learned }}</p>
+        <p class="stat-card__label">Слов изучено</p>
+      </div>
+      <div class="stat-card">
+        <img src="{% static 'souka/src/img/st_combo.png' %}" alt="Комбо" />
+        <p class="stat-card__value">{{ lessons_without_errors }}</p>
+        <p class="stat-card__label">Уроков без ошибок</p>
+      </div>
+      <div class="stat-card">
+        <img src="{% static 'souka/src/img/st_active.png' %}" alt="Активность" />
+        <p class="stat-card__value">{{ active_days }}</p>
+        <p class="stat-card__label">Дни активности</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="profile-achievements">
+    <div class="profile-achievements__header">
+      <h2 class="profile-section__title">Достижения</h2>
+      <a href="{% url 'achievements' %}" class="profile-achievements__view-all">Смотреть все</a>
+    </div>
+
+    {% for achievement in achievements|slice:":3" %}
+      <div class="achievement-path {% if achievement.completed %}success{% else %}inactive{% endif %}">
+        <h3 class="achievement-path__title {% if achievement.completed %}green{% endif %}">{{ achievement.title }}</h3>
+        <div class="achievement-card">
+          {% if achievement.completed %}
+            <img src="{% static 'souka/src/img/' %}{{ achievement.image_true }}" alt="{{ achievement.title }}">
+          {% else %}
+            <img src="{% static 'souka/src/img/' %}{{ achievement.image_false }}" alt="{{ achievement.title }}">
+          {% endif %}
+          <div class="achievement-card__text">
+            <p class="achievement-card__task">{{ achievement.description }}</p>
+            {% if achievement.completed %}
+              <p class="achievement-card__status">Выполнено!</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </section>
+{% endblock %}

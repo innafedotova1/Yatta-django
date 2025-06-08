@@ -1,0 +1,148 @@
+{% extends 'souka/base.html' %}
+{% load static %}
+
+{% block title %}Настройки{% endblock %}
+{% block body_class %}settings-page{% endblock %}
+
+{% block header %}
+  <header class="settings-header">
+    <h1 class="settings-header__logo">Yatta!</h1>
+  </header>
+{% endblock %}
+
+{% block content %}
+  <section class="settings-block">
+    <h2 class="settings-block__header">Настройки</h2>
+    <h3 class="settings-block__title">Процесс обучения</h3>
+    <div class="settings-card">
+      <div class="settings-option">
+        <span>Звуковые эффекты</span>
+        <label class="switch">
+          <input type="checkbox" />
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="settings-option">
+        <span>Анимации</span>
+        <label class="switch">
+          <input type="checkbox" checked />
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="settings-option">
+        <span>Аудирование</span>
+        <label class="switch">
+          <input type="checkbox" checked />
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <section class="settings-block">
+    <h3 class="settings-block__title">Профиль</h3>
+
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <form method="post" class="settings-card">
+      {% csrf_token %}
+
+    <label>Аватар</label>
+    <div class="avatar-upload">
+
+      <div class="avatar-slot selected-avatar">
+        <img id="avatar-preview" src="{% static 'souka/src/img/' %}{{ user.profile.avatar }}" alt="Выбранная аватарка">
+      </div>
+
+      <div class="avatar-divider"></div>
+
+      <div class="avatar-row">
+        {% for avatar in avatar_choices %}
+          <div class="avatar-slot avatar-slot--small {% if avatar == user.profile.avatar %}selected{% endif %}">
+            <label>
+              <input type="radio" name="avatar" value="{{ avatar }}" class="avatar-radio" {% if avatar == user.profile.avatar %}checked{% endif %} hidden />
+              <img src="{% static 'souka/src/img/' %}{{ avatar }}" alt="Аватар" />
+            </label>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+      <label>Имя</label>
+      <input type="text" name="first_name" value="{{ user.username }}" />
+      <label>Email</label>
+      <input type="email" name="email" value="{{ user.email }}" />
+      <div class="settings-button-wrapper">
+        <button type="submit" class="button_small_green">Сохранить</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="settings-block">
+    <h3 class="settings-block__title">Смена пароля</h3>
+    <form method="post" class="settings-card" action="{% url 'settings' %}#change-password">
+      {% csrf_token %}
+      <input type="hidden" name="change_password" value="1" />
+      <label>Текущий пароль</label>
+      <input type="password" name="old_password" required />
+      <label>Новый пароль</label>
+      <input type="password" name="new_password1"  placeholder="Не менее 8 символов" required />
+      <label>Еще раз новый пароль</label>
+      <input type="password" name="new_password2"  placeholder="Не менее 8 символов" required />
+      <div class="settings-button-wrapper">
+        <button class="button_small_green" type="submit">Сохранить</button>
+      </div>
+    </form>
+
+    <form action="{% url 'logout' %}" method="post" class="settings-block__exit">
+      {% csrf_token %}
+      <button type="submit" class="button_big_yellow exit_button">Выйти из аккаунта</button>
+    </form>
+  </section>
+{% endblock %}
+
+{% block footer %}
+  {{ block.super }}
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const avatarInputs = document.querySelectorAll('input[name="avatar"]');
+      const preview = document.getElementById("avatar-preview");
+
+      avatarInputs.forEach((input) => {
+        input.addEventListener("change", function () {
+          const newAvatar = this.value;
+
+          if (preview) {
+            preview.src = `/static/souka/src/img/${newAvatar}`;
+          }
+
+          fetch("{% url 'update_avatar' %}", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": "{{ csrf_token }}",
+            },
+            body: JSON.stringify({ avatar: newAvatar }),
+          })
+          .then(response => {
+            if (!response.ok) {
+              console.error("Ошибка при сохранении");
+            }
+          })
+          .catch(error => {
+            console.error("Ошибка сети:", error);
+          });
+        });
+      });
+    });
+  </script>
+{% endblock %}
+
+
+

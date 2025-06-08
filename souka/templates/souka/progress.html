@@ -1,0 +1,96 @@
+{% extends 'souka/base.html' %}
+{% load static %}
+
+{% block title %}Успеваемость{% endblock %}
+{% block body_class %}progress-page{% endblock %}
+
+{% block header %}
+  <header class="profile-header">
+    <h1 class="profile-header__logo">Yatta!</h1>
+  </header>
+{% endblock %}
+
+{% block content %}
+  <section class="progress-section">
+    <div class="progress-wrapper">
+      <h1 class="progress-title">Успеваемость</h1>
+
+      <div class="progress-container">
+        <div class="progress-card">
+          <img src="{% static 'souka/src/icons/fire.svg' %}" alt="Огонь">
+          <div>
+            <div class="progress-number">{{ active_days }}</div>
+            <div class="progress-label">Дни активности</div>
+          </div>
+        </div>
+        <div class="progress-card">
+          <img src="{% static 'souka/src/icons/kanji.svg' %}" alt="Слова">
+          <div>
+            <div class="progress-number">{{ words_learned }}</div>
+            <div class="progress-label">Слов изучено</div>
+          </div>
+        </div>
+        <div class="progress-card">
+          <img src="{% static 'souka/src/icons/puzzle.svg' %}" alt="Без ошибок">
+          <div>
+            <div class="progress-number">{{ lessons_without_errors }}</div>
+            <div class="progress-label">Уроков без ошибок</div>
+          </div>
+        </div>
+        <div class="progress-card">
+          <img src="{% static 'souka/src/icons/book.svg' %}" alt="Пройдено">
+          <div>
+            <div class="progress-number">{{ completed_lessons }}</div>
+            <div class="progress-label">Уроков пройдено</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="words-section">
+        <h2 class="words-title">Слова</h2>
+        <div class="words-card">
+          <div class="words-info">
+            <div class="words-progress-label">Изучено сегодня:</div>
+            <div class="words-progress-count">
+              <span class="green">{{ words_today }}</span> <span class="gray"> / 6 </span>
+            </div>
+            <div class="words-progress-label">Слов</div>
+          </div>
+          <div class="words-chart">
+            <svg class="progress-ring" width="112" height="112">
+              <circle class="progress-ring__background" cx="56" cy="56" r="48.5" />
+              <circle class="progress-ring__circle" cx="56" cy="56" r="48.5" />
+            </svg>
+            <div class="progress-center-square"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div style="height: 200px"></div>
+
+  </section>
+{% endblock %}
+
+{% block footer %}
+  {{ block.super }}
+  <script>
+    function setProgress(wordsLearnedToday) {
+      const circle = document.querySelector('.progress-ring__circle');
+      if (!circle) return;  // Защита от отсутствия элемента
+
+      const radius = circle.r.baseVal.value;
+      const circumference = 2 * Math.PI * radius;
+
+      circle.style.strokeDasharray = `${circumference} ${circumference}`;
+      circle.style.strokeDashoffset = circumference;
+
+      const progress = Math.min(wordsLearnedToday, 6); // максимум 6
+      const offset = circumference - (progress / 6) * circumference;
+      circle.style.strokeDashoffset = offset;
+    }
+
+    setProgress({{ words_today|default:0 }});
+  </script>
+
+{% endblock %}

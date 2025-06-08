@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" href="{% static 'souka/src/css/style.css' %}" rel="stylesheet" />
+    <title>Главная</title>
+    {% include 'souka/favicons.html' %}
+</head>
+<body>
+    <div class="main-section main">
+        <div class="main__image-wrapper">
+            <img class="main__image" src="{% static 'souka/src/img/cats.png' %}" alt="Картинка">
+        </div>
+        <div class="main__container">
+            <h2 class="main__title">Создайте новый профиль</h2>
+            <h3 class="main__text">Создайте профиль для сохранения прогресса и продолжения обучения</h3>
+            <div class="main__buttons">
+                <a href="{% url 'index' %}" class="button_small_bone button_back">Назад</a>
+                <a href="{% url 'registration' %}" class="button_small_red button_next">Далее</a>
+            </div>
+        </div>
+        
+    </div>
+
+    
+</body>
+</html>

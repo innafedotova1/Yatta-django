@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ lesson.title }}</title>
+  <link rel="stylesheet" href="{% static 'souka/src/css/style.css' %}">
+  {% include 'souka/favicons.html' %}
+</head>
+<body>
+
+<div class="lesson-page">
+
+  <header class="lesson-page__header">
+    <a class="lesson-page__cross" href="{% url 'home' %}" title="Вернуться">
+      <img src="{% static 'souka/src/icons/cross.svg' %}" alt="Назад" width="32" height="32">
+    </a>
+    <h1 class="lesson-page__title">{{ lesson.title }}</h1>
+  </header>
+
+  <div class="lesson-page__video-wrapper">
+    <video 
+      class="lesson-page__video"
+      src="{{ lesson.video.url }}"
+      controls 
+      preload="metadata">
+    </video>
+  </div>
+
+  <button class="lesson-page__toggle button_small_bone">
+    Заметка к уроку
+    <img class="arrow" src="{% static 'souka/src/icons/arrow_down.svg' %}" alt="Раскрыть">
+  </button>
+
+  <div class="lesson-page__note">
+  {{ lesson.description|safe }}
+  </div>
+
+  <form method="post" action="{% url 'mark_lesson_done' chapter_id=lesson.chapter.id %}">
+    {% csrf_token %}
+    <button type="submit" class="lesson-page__done button_big_bone">
+      Посмотрено!
+    </button>
+  </form>
+
+</div>
+
+<script>
+  const toggleButton = document.querySelector('.lesson-page__toggle')
+  const note = document.querySelector('.lesson-page__note')
+  const arrow = toggleButton.querySelector('.arrow')
+
+  toggleButton.addEventListener('click', () => {
+    note.classList.toggle('open')
+    if (note.classList.contains('open')) {
+      arrow.src = "{% static 'souka/src/icons/arrow_up.svg' %}"
+      arrow.alt = 'Скрыть'
+    } else {
+      arrow.src = "{% static 'souka/src/icons/arrow_down.svg' %}"
+      arrow.alt = 'Раскрыть'
+    }
+  })
+</script>
+
+</body>
+</html>

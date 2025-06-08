@@ -1,0 +1,114 @@
+{% extends 'souka/base.html' %}
+{% load static %}
+{% load souka_tags %}
+
+{% block title %}Souka - Модули{% endblock %}
+{% block body_class %}main-page{% endblock %}
+
+{% block header %}
+  <header class="main-page__header">
+    <div class="logo">Yatta!</div>
+    <div class="header-box">
+      <div class="module-title">Модули</div>
+    </div>
+  </header>
+{% endblock %}
+
+{% block content %}
+  <main class="main-content">
+    <div class="main-container">
+      {% for module in modules %}
+        {% for chapter in module.chapters.all %}
+          {% with cp=progress_dict|dict_get:chapter.id %}
+          <section class="module-block">
+            <h1 class="module-block__lesson-title">{{ chapter.title }}</h1>
+            <div class="module-block__cards">
+
+              {% with prev=module.chapters.all|prev_chapter:chapter %}
+                {% with prev_progress=progress_dict|dict_get:prev.id %}
+                  {% if forloop.first or prev_progress.text_done %}
+                    <a href="{% url 'lesson_detail' chapter.id %}" class="card-link" data-step="0">
+                      <img src="{% static 'souka/src/img/lesson_video.png' %}" alt="Видео урок">
+                    </a>
+                  {% else %}
+                    <a class="card-link disabled" data-step="0">
+                      <img src="{% static 'souka/src/img/lesson_video_f.png' %}" alt="Видео урок (недоступно)">
+                    </a>
+                  {% endif %}
+                {% endwith %}
+              {% endwith %}
+
+              {# Интерактив 1 — доступен после видео #}
+              {% with choices=chapter.choices.all %}
+                {% if choices|length > 0 %}
+                  {% if cp.lesson_done %}
+                    <a href="{% url 'choice' choices.0.id %}" class="card-link" data-step="1">
+                      <img src="{% static 'souka/src/img/lesson_choice_1.png' %}" alt="Интерактив 1">
+                    </a>
+                  {% else %}
+                    <a class="card-link disabled" data-step="1">
+                      <img src="{% static 'souka/src/img/lesson_choice_1_f.png' %}" alt="Интерактив 1 (недоступно)">
+                    </a>
+                  {% endif %}
+                {% endif %}
+
+                {# Интерактив 2 — после интерактива 1 #}
+                {% if choices|length > 1 %}
+                  {% if cp.choice_1_done %}
+                    <a href="{% url 'choice' choices.1.id %}" class="card-link" data-step="2">
+                      <img src="{% static 'souka/src/img/lesson_choice_2.png' %}" alt="Интерактив 2">
+                    </a>
+                  {% else %}
+                    <a class="card-link disabled" data-step="2">
+                      <img src="{% static 'souka/src/img/lesson_choice_2_f.png' %}" alt="Интерактив 2 (недоступно)">
+                    </a>
+                  {% endif %}
+                {% endif %}
+              {% endwith %}
+
+              {# Текст — доступен после интерактива 2 #}
+              {% if chapter.text %}
+                {% if cp.choice_2_done %}
+                  <a href="{% url 'text_lesson' chapter.text.id %}" class="card-link" data-step="3">
+                    <img src="{% static 'souka/src/img/lesson_text.png' %}" alt="Текстовое задание">
+                  </a>
+                {% else %}
+                  <a class="card-link disabled" data-step="3">
+                    <img src="{% static 'souka/src/img/lesson_text_f.png' %}" alt="Текст (недоступно)">
+                  </a>
+                {% endif %}
+              {% endif %}
+
+            </div>
+          </section>
+          {% endwith %}
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </main>
+{% endblock %}
+
+{% block footer %}
+  {{ block.super }}
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const moduleTitle = document.querySelector(".module-title");
+      const headerBox = document.querySelector(".header-box");
+      const lesson2Title = document.querySelectorAll(".module-block__lesson-title")[1];
+
+      function updateModuleTitle() {
+        const headerBottom = headerBox.getBoundingClientRect().bottom;
+        const lesson2Top = lesson2Title.getBoundingClientRect().top;
+
+        if (headerBottom >= lesson2Top) {
+          moduleTitle.textContent = "Модуль 1, Урок 2";
+        } else {
+          moduleTitle.textContent = "Модуль 1, Урок 1";
+        }
+      }
+
+      window.addEventListener('scroll', updateModuleTitle);
+      updateModuleTitle();
+    });
+  </script>
+{% endblock %}

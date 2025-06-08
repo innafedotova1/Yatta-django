@@ -1,0 +1,25 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" href="{% static 'souka/src/css/style.css' %}" rel="stylesheet" />
+    <meta name="description" content="Изучение японского языка">
+    {% include 'souka/favicons.html' %}
+</head>
+<body>
+    <section class="main-section door">
+        <h1 class="main-section__title">Yatta!</h1>
+        {% if is_promo %}
+        <p>Hello</p>
+        {%endif%}
+        <div class="buttons main-section__buttons">
+            <a href="{% url 'create' %}" class="button_big_yellow buttons__registration">Регистрация</a>
+            <a href="{% url 'login' %}" class="button_big_white buttons__account">Уже есть аккаунт</a>
+        </div>
+    </section>
+</body>
+</html>

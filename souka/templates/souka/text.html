@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ text.title }}</title>
+  <link rel="stylesheet" href="{% static 'souka/src/css/style.css' %}">
+  {% include 'souka/favicons.html' %}
+</head>
+<body class="lesson-page">
+
+  <header class="lesson-page__header">
+    <a class="choice-page__cross" href="{% url 'home' %}" title="Вернуться">
+      <img src="{% static 'souka/src/icons/cross.svg' %}" alt="Назад" width="32" height="32">
+    </a>
+    <h1 class="lesson-page__title">{{ text.chapter.title }}</h1>
+  </header>
+
+  <div class="choice-wrapper">
+    <div class="lesson-title">Напиши на русском</div>
+
+    <div class="text-task">
+      <div class="kanji-display">{{ text.content }}</div>
+      <textarea class="text-answer" placeholder="Напиши перевод..." rows="4"></textarea>
+    </div>
+  </div>
+
+  <div class="button-group">
+    <button id="retry-btn" class="button_small_gray" onclick="retry()" style="display: none;">Ещё раз</button>
+    <button id="check-btn" class="button_small_green">Проверить!</button>
+  </div>
+
+  <form id="mark-done-form" method="post" action="{% url 'mark_text_done' text.id %}" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="perfect" id="perfect-input" value="true">
+  </form>
+
+
+  <script>
+    const correctAnswers = {{ text.get_correct_answers|safe }};
+    let canCheck = true;
+    let canSubmit = false;
+    let wasIncorrect = false;
+
+    function checkAnswer() {
+      if (!canCheck) return;
+
+      const inputEl = document.querySelector('.text-answer');
+      const value = inputEl.value.trim().toLowerCase();
+      const checkBtn = document.getElementById('check-btn');
+      const retryBtn = document.getElementById('retry-btn');
+      const form = document.getElementById('mark-done-form');
+      const perfectInput = document.getElementById('perfect-input');
+
+      inputEl.classList.remove('correct-answer', 'wrong-answer');
+
+      if (correctAnswers.includes(value)) {
+        inputEl.classList.add('correct-answer');
+        checkBtn.textContent = 'Дальше!';
+        retryBtn.style.display = 'none';
+        perfectInput.value = wasIncorrect ? 'false' : 'true';
+        inputEl.readOnly = true;
+        canCheck = false;
+        canSubmit = true;
+      } else {
+        inputEl.classList.add('wrong-answer');
+        inputEl.value = value + '\n\nВерный вариант ответа: {{ text.get_first_answer }}';
+        checkBtn.style.display = 'none';
+        retryBtn.style.display = 'inline-block';
+        perfectInput.value = 'false';
+        inputEl.readOnly = true;
+        wasIncorrect = true;
+        canCheck = false;
+        canSubmit = false;
+      }
+    }
+
+    function retry() {
+      const inputEl = document.querySelector('.text-answer');
+      inputEl.classList.remove('correct-answer', 'wrong-answer');
+      inputEl.value = '';
+      inputEl.readOnly = false;
+
+      const checkBtn = document.getElementById('check-btn');
+      const retryBtn = document.getElementById('retry-btn');
+
+      retryBtn.style.display = 'none';
+      checkBtn.style.display = 'inline-block';
+      checkBtn.textContent = 'Проверить!';
+
+      wasIncorrect = true;  // пользователь уже ошибался
+      canCheck = true;
+      canSubmit = false;
+    }
+
+    document.getElementById('check-btn').addEventListener('click', function () {
+      if (canSubmit) {
+        document.getElementById('mark-done-form').submit();
+      } else {
+        checkAnswer();
+      }
+    });
+
+    document.querySelector('.text-answer').addEventListener('keydown', function(event) {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();  // не добавлять \n
+
+        const checkBtn = document.getElementById('check-btn');
+        const retryBtn = document.getElementById('retry-btn');
+        const form = document.getElementById('mark-done-form');
+
+        if (checkBtn.style.display !== 'none' && checkBtn.textContent === 'Проверить!') {
+          checkAnswer();
+        } else if (checkBtn.style.display !== 'none' && checkBtn.textContent === 'Дальше!') {
+          form.submit();
+        } else if (retryBtn.style.display !== 'none') {
+          retry();
+        }
+      }
+    });
+  </script>
+
+
+</body>
+</html>
