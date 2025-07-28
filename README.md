@@ -14,7 +14,7 @@ Yatta — это веб-приложение для изучения японс�
 ## Стек технологий
 
 - **Backend:** Django (Python)
-- **База данных:** PostgreSQL
+- **База данных:** SQLite, PostgreSQL
 - **Frontend:** HTML, CSS (SASS), JavaScript
 - **Деплой:** Docker
 
