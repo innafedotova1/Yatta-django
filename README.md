@@ -34,4 +34,9 @@ Yatta — это веб-приложение для изучения японс�
 - Платформа для языковых школ с возможностью администрирования
 - Базовый каркас для аналогичных образовательных проектов
 
+## User Flow
 ![uf](https://github.com/user-attachments/assets/bebf3d82-35b0-4552-a6d3-7f6fd874f157)
+
+## UML (ERD)
+![ERD](https://github.com/user-attachments/assets/37ffab00-cf28-4c7f-a736-cdda6dfb99f8)
+
