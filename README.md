@@ -41,7 +41,9 @@ Yatta — это веб-приложение для изучения японс�
 ![ERD](https://github.com/user-attachments/assets/37ffab00-cf28-4c7f-a736-cdda6dfb99f8)
 
 ## Видео
-https://github.com/user-attachments/assets/4d4795df-f226-4b8a-a263-4260ec80d56e
+https://github.com/user-attachments/assets/665614eb-09f4-4f8c-9f91-7246f1f9eedc
+
+
 
 
 
