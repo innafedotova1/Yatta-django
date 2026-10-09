@@ -1,6 +1,5 @@
 # Веб-приложение Yatta
-**Демо:** [http://31.56.48.231](http://31.56.48.231)
-## Видео
+## Демо
 https://github.com/user-attachments/assets/665614eb-09f4-4f8c-9f91-7246f1f9eedc
 
 ## Описание проекта
