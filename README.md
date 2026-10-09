@@ -40,3 +40,9 @@ Yatta — это веб-приложение для изучения японс�
 ## UML (ERD)
 ![ERD](https://github.com/user-attachments/assets/37ffab00-cf28-4c7f-a736-cdda6dfb99f8)
 
+## Видео
+
+https://github.com/user-attachments/assets/829235cd-1f75-4936-b4aa-e4ae2e3dacc4
+
+
+
